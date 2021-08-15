@@ -1,0 +1,188 @@
+<!--<!DOCTYPE html>
+<html>
+  <head>
+    
+            You are creating the "shopping cart experience" for an Online Marketplace.
+            From this API you can retrieve the list of the available books:
+            https://striveschool-api.herokuapp.com/books
+
+            What you need to do is:
+            0) Get all the products from the API using a fetch
+            1) Display the list of items available on the page using template literals `` and .forEach
+            2) Add an "Add to Cart" button
+            3) When the button is pressed, change the style of the item and add its data to another list. That's going to be the Cart's list. Display it somewhere.
+            4) Allow the user to delete items from the cart's list
+            5) Add a "Skip" or "Ignore" button to each book in the page
+            6) When pressed, the button should remove the corresponding item from the page, so the user can focus on those that interests him more.
+            7) Add a search bar where the user can search for books. When the user types more than 3 chars, you should filter the content of the page to show only the items with a matching name (hint: use .filter method)
+            
+            
+            [EXTRA]
+            8) Add a "Clean Cart" button, to clean the whole list.
+            9) Create a "Detail page" for the product. When the user clicks on a product name, the app should redirect him to the secondary page, passing the ASIN in query string
+            10) In the detail page retrieve the ASIN from the query string and use it to fetch and show some details of the selected product (use this endpoint: https://striveschool-api.herokuapp.com/books/1940026091 to fetch the details of a specific book)
+        -->
+  
+        <!DOCTYPE html>
+        <html lang="en">
+          <head>
+            <!-- Required meta tags -->
+            <meta charset="utf-8" />
+            <meta
+              name="viewport"
+              content="width=device-width, initial-scale=1, shrink-to-fit=no"
+            />
+        
+            <!-- Bootstrap CSS -->
+            <link
+              rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css"
+              integrity="sha384-B0vP5xmATw1+K9KRQjQERJvTumQW0nPEzvF6L/Z6nronJ3oUOFUFpCjEUQouq2+l"
+              crossorigin="anonymous"
+            />
+            <link
+              rel="stylesheet"
+              href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css"
+            />
+            <!-- Font-Awesome -->
+            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" integrity="sha512-iBBXm8fW90+nuLcSKlbmrPcLa0OT92xO1BIsZ+ywDWZCvqsWgccV3gFoRBv0z+8dLJgyAHIhR35VZc2oM/gI1w==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+        
+        
+            <title>Shopping-Cart</title>
+        
+             <!-- === ===== CSS Internal Styles Section ==== ===== ===== -->
+            
+             <!-- === ===== End of CSS  ==== ===== ===== -->
+        <style>
+          .text-ellipsis{
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+        </style>
+          </head>
+          <body>
+          <!-- ////////////////////  Navbar Implementation ////////////////////// -->
+            <nav class="navbar navbar-expand-lg navbar-light bg-light ">
+              <div class="container-md">
+                <a class="navbar-brand text-success" href="#">Navbar</a>
+                <button
+                  class="navbar-toggler"
+                  type="button"
+                  data-toggle="collapse"
+                  data-target="#navbarSupportedContent"
+                  aria-controls="navbarSupportedContent"
+                  aria-expanded="false"
+                  aria-label="Toggle navigation"
+                >
+                  <span class="navbar-toggler-icon"></span>
+                </button>
+        
+                <div class="collapse navbar-collapse" id="navbarSupportedContent">
+                  <ul class="navbar-nav mr-auto">
+                    <!-- === ===== Home text ==== ===== ===== -->
+                    <li class="nav-item active">
+                      <a class="nav-link text-success" href="#"
+                        >Home <span class="sr-only">(current)</span></a
+                      >
+                    </li>
+                     <!-- === ===== Link text ==== ===== ===== -->
+                    <li class="nav-item">
+                      <a class="nav-link text-success" href="#">Link</a>
+                    </li>
+        
+                     <!-- === ===== Dropdown text ==== ===== ===== -->
+                    <li class="nav-item dropdown">
+                      <a
+                        class="nav-link dropdown-toggle text-success"
+                        href="#"
+                        id="navbarDropdown"
+                        role="button"
+                        data-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        Dropdown
+                      </a>
+                      <div class="dropdown-menu" aria-labelledby="navbarDropdown">
+                        <a class="dropdown-item" href="#">Action</a>
+                        <a class="dropdown-item" href="#">Another action</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="#">Something else here</a>
+                      </div>
+                    </li>
+                     <!-- === ===== Disabled text ==== ===== ===== -->
+                    <li class="nav-item">
+                      <a
+                        class="nav-link disabled text-success"
+                        href="#"
+                        tabindex="-1"
+                        aria-disabled="true"
+                        >Disabled</a
+                      >
+                    </li>
+                  </ul>   <!-- === ===== End of Unordered List ==== ===== ===== -->
+                  <div ><i onclick="displayCart()" class="bi bi-cart mr-2"></i><span id="cart">0</span></div>
+                </div>
+              </div>
+            </nav>     <!-- === ===== Navbar End ==== ===== ===== -->
+        
+             <!-- //////////////////// Next-Container /////////////////////// -->
+           
+          
+        <!--  ///////////////////////////////       -->
+          <div class="container alert">    
+        <div class="alert alert-info mt-3 mb-4" role="alert">
+          Click on <strong>Cart Icon </strong> to see the Booklist added to cart !!
+        </div>
+      </div>
+      <div class="container cartPrice">
+            
+             
+            </div>
+      </div>
+        <div id="cards-container" class="container mt-4 text-warning">
+            <h3 class="mb-2" style="text-align: center;">STRIVE-CART<span><i class="fab fa-angellist"></i></span></h3>
+          <h5 class="mb-2 text-success remove">Books for Sale !!</h5>
+          <form class="row ml-0 mt-4 remove">
+            <input
+              class="search-text form-control col-10 col-sm-8 col-md-6"
+              type="text"
+              placeholder="Search from categories (.....)"
+              onchange="handlesecondsearch(event)"
+            />
+            <button type="button" class="search-btn btn btn-secondary col-2 text-warning">
+              Search
+            </button>
+          </form>
+          </div>
+
+          <div class="container mt-4 booksContainer">
+              <div class="row">
+
+              </div>
+          </div>
+
+ 
+            
+        
+             <!-- === ===== Script Section ==== ===== ===== -->
+        
+            <script
+              src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+              integrity="sha384-DfXdz2htPH0lsSSs5nCTpuj/zy4C+OGpamoFVy38MVBnE+IbbVYUew+OrCXaRkfj"
+              crossorigin="anonymous"
+            ></script>
+            <script
+              src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/js/bootstrap.bundle.min.js"
+              integrity="sha384-Piv4xVNRyMGpqkS2by6br4gNJ7DXjqk09RmUpJ8jgGtD7zP9yug3goQfGII0yAns"
+              crossorigin="anonymous"
+            ></script>
+        
+            <script src="script.js"></script>
+        
+             <!-- === ===== End of Script ==== ===== ===== -->
+          
+          </body>
+        </html>
+        
